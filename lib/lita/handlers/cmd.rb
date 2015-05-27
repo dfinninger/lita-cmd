@@ -6,13 +6,19 @@ module Lita
 
       config :scripts_dir
 
-      route(/^\s*cmd-help\s*$/, command: true, help: {
+      route(/^\s*cmd-help\s*$/, :cmd_help, command: true, help: {
         "cmd-help" => "get a list of scripts available for execution"
-      }) do |resp|
+      })
+
+      def cmd_help(resp)
+        out = Array.new
+
         Dir.chdir(config.scripts_dir)
-        out = String.new
         Dir.glob('*').each { |d| out << d }
-        resp.reply code_blockify(out)
+
+        list = out.sort.join("\n")
+
+        resp.reply code_blockify(list)
       end
 
       route(/^\s*cmd\s+(\S*)\s*(.*)$/, :cmd, command: true, help: {
