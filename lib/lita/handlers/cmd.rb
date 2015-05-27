@@ -1,5 +1,4 @@
 require 'open3'
-require 'iconv'
 
 module Lita
   module Handlers
@@ -42,8 +41,16 @@ module Lita
         if err != String.new
           out << "\n\n#{err}"
         end
-        Iconv.conv('ASCII//IGNORE', 'UTF8', out)
-        resp.reply code_blockify(out)
+
+        # Scrub Unicode to ASCII
+        encoding_options = {
+          :invalid           => :replace,  # Replace invalid byte sequences
+          :undef             => :replace,  # Replace anything not defined in ASCII
+          :replace           => '',        # Use a blank for those replacements
+          :universal_newline => true       # Always break lines with \n
+        }
+        ascii_out = out.encode(Encoding.find('ASCII'), encoding_options)
+        resp.reply code_blockify(ascii_out)
       end
 
       def code_blockify(text)
