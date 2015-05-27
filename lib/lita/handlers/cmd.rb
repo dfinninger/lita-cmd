@@ -46,8 +46,7 @@ module Lita
         encoding_options = {
           :invalid           => :replace,  # Replace invalid byte sequences
           :undef             => :replace,  # Replace anything not defined in ASCII
-          :replace           => '',        # Use a blank for those replacements
-          :universal_newline => true       # Always break lines with \n
+          :replace           => ''        # Use a blank for those replacements
         }
         ascii_out = out.encode(Encoding.find('ASCII'), encoding_options)
         resp.reply code_blockify(ascii_out)
