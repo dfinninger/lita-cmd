@@ -33,7 +33,11 @@ module Lita
         if err != String.new
           out << "\n\n#{err}"
         end
-        resp.reply out
+        resp.reply code_blockify(out)
+      end
+
+      def code_blockify(text)
+        "```\n" + text + "\n```"
       end
 
     end
