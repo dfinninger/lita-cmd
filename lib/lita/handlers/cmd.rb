@@ -20,12 +20,12 @@ module Lita
       def cmd(resp)
         dir = config.scripts_dir
         script = resp.matches[0][0]
-        opts = resp.matches[0][1]
+        opts = resp.matches[0][1].split(" ")
         Dir.chdir('/tmp')
 
         out = String.new
         err = String.new
-        Open3.popen3("#{dir}/#{script}", opts) do |i, o, e, wait_thread|
+        Open3.popen3("#{dir}/#{script}", *opts) do |i, o, e, wait_thread|
           o.each { |line| out << "[ #{script} :: stdout ] #{line}" }
           e.each { |line| err << "[ #{script} :: stderr ] #{line}" }
         end
