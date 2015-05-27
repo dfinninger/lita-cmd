@@ -41,6 +41,7 @@ module Lita
         if err != String.new
           out << "\n\n#{err}"
         end
+        Iconv.conv('ASCII//IGNORE', 'UTF8', out)
         resp.reply code_blockify(out)
       end
 
