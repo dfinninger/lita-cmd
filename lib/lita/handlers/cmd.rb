@@ -50,7 +50,7 @@ module Lita
         }
         ascii_out = out.encode(Encoding.find('ASCII'), encoding_options)
 
-        ascii_out.split("\n").each_slice(75) do |slice|
+        ascii_out.split("\n").each_slice(50) do |slice|
           resp.reply code_blockify(slice.join("\n"))
         end
       end
