@@ -10,7 +10,9 @@ module Lita
         "cmd-help" => "get a list of scripts available for execution"
       }) do |resp|
         Dir.chdir(config.scripts_dir)
-        Dir.glob('*').each { |d| resp.reply d }
+        out = String.new
+        Dir.glob('*').each { |d| out << d }
+        resp.reply code_blockify(out)
       end
 
       route(/^\s*cmd\s+(\S*)\s*(.*)$/, :cmd, command: true, help: {
