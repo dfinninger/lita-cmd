@@ -1,4 +1,5 @@
 require 'open3'
+require 'iconv'
 
 module Lita
   module Handlers
