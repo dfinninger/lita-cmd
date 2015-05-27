@@ -49,7 +49,10 @@ module Lita
           :replace           => ''        # Use a blank for those replacements
         }
         ascii_out = out.encode(Encoding.find('ASCII'), encoding_options)
-        resp.reply code_blockify(ascii_out)
+
+        ascii_out.split("\n").each_slice(100) do |slice|
+          resp.reply code_blockify(slice.join("\n"))
+        end
       end
 
       def code_blockify(text)
