@@ -1,6 +1,6 @@
 # lita-cmd
 
-TODO: Add a description of the plugin.
+Run scripts from your lita machine and get back the output!
 
 ## Installation
 
@@ -12,8 +12,51 @@ gem "lita-cmd"
 
 ## Configuration
 
-TODO: Describe any configuration attributes the plugin exposes.
+```ruby
+Lita.configure do |config|
+  # Lita CMD stuff
+  config.handlers.cmd.scripts_dir = "/path/to/dir/you/expose"
+end
+```
+
+Also, make sure that you are a member of the `devops` Lita Auth group. This requirement will change soon. See Roadmap below.
 
 ## Usage
 
-TODO: Describe the plugin's features and how to use them.
+- `cmd-help`
+  - Query the configured directory for filenames and return them
+- `cmd`
+  - Execute a file in the configured directory
+
+>- dfinninger: `lita cmd-help`
+- lita:
+```
+hello
+name
+```
+- dfinninger: `lita cmd hello`
+- lita:
+```
+Hello!
+```
+- dfinninger: `lita cmd name`
+- lita:
+```
+Your name is: ... well, idk, man...
+```
+- dfinninger: `lita cmd name Devon`
+- lita:
+```
+Your name is: Devon
+```
+
+## Notes
+
+- Make sure that your files are executable
+  - (`chmod +x FILE`)
+- Make sure that you've included the correct shebang
+  - `#!/bin/bash`, `#!/usr/bin/env ruby`, etc...
+
+## Roadmap
+
+[ ] Include support for directory-based access control
