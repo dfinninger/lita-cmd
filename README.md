@@ -19,8 +19,6 @@ Lita.configure do |config|
 end
 ```
 
-Also, make sure that you are a member of the `devops` Lita Auth group. This requirement will change soon. See Roadmap below.
-
 ## Usage
 
 - `cmd-help`
