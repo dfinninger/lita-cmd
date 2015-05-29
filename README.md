@@ -58,3 +58,4 @@ Your name is: Devon
 ## Roadmap
 
 - [ ] Include support for directory-based access control
+- [ ] Help text for individual commands
