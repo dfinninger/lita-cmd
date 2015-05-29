@@ -16,7 +16,7 @@ module Lita
         list = Dir.entries(config.scripts_dir).select { |f| File.file? "#{config.scripts_dir}/#{f}" }
 
         out = list.sort.join("\n")
-        resp.reply code_blockify(out)
+        resp.reply_privately code_blockify(out)
       end
 
       ### CMD ###################################################
