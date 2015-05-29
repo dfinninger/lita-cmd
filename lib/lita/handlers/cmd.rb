@@ -6,34 +6,32 @@ module Lita
 
       config :scripts_dir
 
+      ### CMD-HELP ##############################################
+
       route(/^\s*cmd-help\s*$/, :cmd_help, command: true, help: {
         "cmd-help" => "get a list of scripts available for execution"
       })
 
       def cmd_help(resp)
-        out = Array.new
+        list = Dir.entries(config.scripts_dir).select { |f| File.file? "#{config.scripts_dir}/#{f}" }
 
-        Dir.chdir(config.scripts_dir)
-        Dir.glob('*').each { |d| out << d }
-
-        list = out.sort.join("\n")
-
-        resp.reply code_blockify(list)
+        out = list.sort.join("\n")
+        resp.reply code_blockify(out)
       end
+
+      ### CMD ###################################################
 
       route(/^\s*cmd\s+(\S*)\s*(.*)$/, :cmd, command: true, help: {
         "cmd SCRIPT" => "run the SCRIPT specified; use `lita cmd help` for a list"
       })
 
       def cmd(resp)
-        dir = config.scripts_dir
         script = resp.matches[0][0]
         opts = resp.matches[0][1].split(" ")
-        Dir.chdir('/tmp')
 
         out = String.new
         err = String.new
-        Open3.popen3("#{dir}/#{script}", *opts) do |i, o, e, wait_thread|
+        Open3.popen3("#{config.scripts_dir}/#{script}", *opts) do |i, o, e, wait_thread|
           o.each { |line| out << "[stdout] #{line}" }
           e.each { |line| err << "[stderr] #{line}" }
         end
@@ -55,8 +53,11 @@ module Lita
         end
       end
 
+      ### HELPERS ############################################
+
+      private
       def code_blockify(text)
-        "```\n" + text + "\n```"
+        "```\n#{text}\n```"
       end
 
     end
