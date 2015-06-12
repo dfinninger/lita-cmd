@@ -12,8 +12,13 @@ module Lita
         "cmd-help" => "get a list of scripts available for execution"
       })
 
+      route(/^\s*test\s*/) do |resp|
+        auth = Lita::Robot.new.auth
+        resp.reply "true" if auth.groups_with_users[:devops].include? resp.user
+      end
+
       def cmd_help(resp)
-        list = Dir.entries(config.scripts_dir).select { |f| File.file? "#{config.scripts_dir}/#{f}" }
+        list = get_script_list(resp, config)
 
         out = list.sort.join("\n")
         resp.reply_privately code_blockify(out)
@@ -28,6 +33,11 @@ module Lita
       def cmd(resp)
         script = resp.matches[0][0]
         opts = resp.matches[0][1].split(" ")
+
+        unless user_is_authorized(script, resp, config)
+          resp.reply_privately "Unauthorized to run '#{script}'!"
+          return
+        end
 
         out = String.new
         err = String.new
@@ -60,6 +70,31 @@ module Lita
         "```\n#{text}\n```"
       end
 
+      def get_script_list(resp, config)
+        bot = Lita::Robot.new
+        auth = bot.auth
+
+        list = Dir.entries(config.scripts_dir).select { |f| File.file? "#{config.scripts_dir}/#{f}" }
+
+        groups = auth.groups_with_users.select { |group, user_list| user_list.include? resp.user }
+        groups.keys.each do |group|
+          begin
+            sublist = Dir.entries("#{config.scripts_dir}/#{group}").select do |f|
+              File.file? "#{config.scripts_dir}/#{group}/#{f}"
+            end
+          rescue SystemCallError => e
+            log.warn "#{group} is not a directory.\n#{e}"
+          end
+          list.concat sublist.map { |x| "#{group}/#{x}" } if sublist
+        end
+
+        list
+      end
+
+      def user_is_authorized(script, resp, config)
+        list = get_script_list(resp, config)
+        list.include? script
+      end
     end
 
     Lita.register_handler(Cmd)

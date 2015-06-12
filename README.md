@@ -29,6 +29,7 @@ end
 >- dfinninger: `lita cmd-help`
 - lita:
 ```
+devops/secret
 hello
 name
 ```
@@ -48,14 +49,51 @@ Your name is: ... well, idk, man...
 Your name is: Devon
 ```
 
+### Group Control
+
+You can now control what groups have access to your Lita scripts!
+
+In your `scripts` dir make some more that match the name of your groups. Only users that are a part of those groups can see/execute those scripts.
+
+#### Example
+
+- scripts dir:
+  - Basic directory setup
+
+```
+scripts/
+  |- devops/
+  |   `- secret
+  |- hello
+  `- name
+```
+
+- `lita cmd-help`
+  - Help text will show you scripts that you have access to with a prefix
+
+```
+devops/secret
+hello
+name
+```
+
+- `lita cmd devops/secret`
+  - Execute the command. Prefix required!
+
+```
+[stdout] I'm a secret!
+```
+
+A non-priviledged user will only see scripts without the prefix.
+
 ## Notes
 
 - Make sure that your files are executable
   - (`chmod +x FILE`)
-- Make sure that you've included the correct shebang
+- Make sure that you've included the correct sha-bang
   - `#!/bin/bash`, `#!/usr/bin/env ruby`, etc...
 
 ## Roadmap
 
-- [ ] Include support for directory-based access control
+- [x] Include support for directory-based access control
 - [ ] Help text for individual commands
