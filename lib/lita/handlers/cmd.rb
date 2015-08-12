@@ -42,7 +42,7 @@ module Lita
         out = String.new
         err = String.new
         Open3.popen3("#{config.scripts_dir}/#{script}", *opts) do |i, o, e, wait_thread|
-          o.each { |line| out << "[stdout] #{line}" }
+          o.each { |line| out << "#{line}" }
           e.each { |line| err << "[stderr] #{line}" }
         end
 
