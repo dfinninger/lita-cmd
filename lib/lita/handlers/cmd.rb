@@ -6,33 +6,23 @@ module Lita
 
       config :scripts_dir
 
-      ### CMD-HELP ##############################################
+      # DEBUGGING COMMANDS
 
-      route(/^\s*cmd-help\s*$/, :cmd_help, command: true, help: {
-        "cmd-help" => "get a list of scripts available for execution"
-      })
+      # route(/^\s*test\s*/) do |resp|
+      #   auth = Lita::Robot.new.auth
+      #   resp.reply "true" if auth.groups_with_users[:devops].include? resp.user
+      # end
 
-      route(/^\s*test\s*/) do |resp|
-        auth = Lita::Robot.new.auth
-        resp.reply "true" if auth.groups_with_users[:devops].include? resp.user
-      end
+      # SCRIPT HANDLER
 
-      def cmd_help(resp)
-        list = get_script_list(resp, config)
-
-        out = list.sort.join("\n")
-        resp.reply_privately code_blockify(out)
-      end
-
-      ### CMD ###################################################
-
-      route(/^\s*cmd\s+(\S*)\s*(.*)$/, :cmd, command: true, help: {
-        "cmd SCRIPT" => "run the SCRIPT specified; use `lita cmd help` for a list"
+      route(/^\s*(\S*)\s*(.*)$/, :cmd, command: true, help: {
+        "COMMAND" => "run the specified COMMAND; try `list` for a list of commands"
       })
 
       def cmd(resp)
         script = resp.matches[0][0]
         opts = resp.matches[0][1].split(" ")
+        return cmd_help(resp) if script == 'list'
 
         unless user_is_authorized(script, resp, config)
           resp.reply_privately "Unauthorized to run '#{script}'!"
@@ -63,9 +53,17 @@ module Lita
         end
       end
 
-      ### HELPERS ############################################
+      def cmd_help(resp)
+        list = get_script_list(resp, config)
+
+        out = list.sort.join("\n")
+        resp.reply_privately code_blockify(out)
+      end
+
+      # HELPERS
 
       private
+
       def code_blockify(text)
         "```\n#{text}\n```"
       end
