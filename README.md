@@ -14,8 +14,19 @@ gem "lita-cmd"
 
 ```ruby
 Lita.configure do |config|
-  # Lita CMD stuff
+  # Lita CMD - required parameters
+  
   config.handlers.cmd.scripts_dir = "/path/to/dir/you/expose"
+
+  # Lita CMD - optional parameters
+
+  # Set the output format. Default: "```\n%s\n```"
+  config.handlers.cmd.output_format = "/code %s"
+
+  # Set the prefix of stdout and stderr. Default: "[stdout] " and "[stderr] "
+  config.handlers.cmd.stdout_prefix = ""
+  config.handlers.cmd.stderr_prefix = "ERROR: "
+
 end
 ```
 
