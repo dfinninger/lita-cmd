@@ -9,18 +9,18 @@ module Lita
       config :stdout_prefix, default: "[stdout] "
       config :stderr_prefix, default: "[stderr] "
 
-      # DEBUGGING COMMANDS
+      # ROUTES
+
+      route(/^\s*run\s+(\S*)\s*(.*)$/, :cmd, command: true, help: {
+        "run SCRIPT" => "run the specified SCRIPT. use `run list` for a list of available scripts."
+      })
 
       # route(/^\s*test\s*/) do |resp|
       #   auth = Lita::Robot.new.auth
       #   resp.reply "true" if auth.groups_with_users[:devops].include? resp.user
       # end
 
-      # SCRIPT HANDLER
-
-      route(/^\s*(\S*)\s*(.*)$/, :cmd, command: true, help: {
-        "COMMAND" => "run the specified COMMAND; try `list` for a list of commands"
-      })
+      # HANDLERS
 
       def cmd(resp)
         script = resp.matches[0][0]
