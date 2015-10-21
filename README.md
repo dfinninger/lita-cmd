@@ -15,7 +15,6 @@ gem "lita-cmd"
 ```ruby
 Lita.configure do |config|
   # Lita CMD - required parameters
-  
   config.handlers.cmd.scripts_dir = "/path/to/dir/you/expose"
 
   # Lita CMD - optional parameters
@@ -27,17 +26,20 @@ Lita.configure do |config|
   config.handlers.cmd.stdout_prefix = ""
   config.handlers.cmd.stderr_prefix = "ERROR: "
 
+  # Set the prefix for running scripts. Default "cmd "
+  config.handlers.cmd.command_prefix = "run "
+
 end
 ```
 
 ## Usage
 
-- `cmd-help`
+- `cmd list`
   - Query the configured directory for filenames and return them
 - `cmd`
   - Execute a file in the configured directory
 
->- dfinninger: `lita cmd-help`
+>- dfinninger: `lita cmd list`
 - lita:
 ```
 devops/secret
@@ -79,7 +81,7 @@ scripts/
   `- name
 ```
 
-- `lita cmd-help`
+- `lita cmd list`
   - Help text will show you scripts that you have access to with a prefix
 
 ```
