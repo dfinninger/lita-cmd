@@ -11,7 +11,7 @@ module Lita
       config :command_prefix, default: "cmd "
 
       def create_routes(payload)
-        self.class.route(/^\s*#{config.command_prefix}(\S*)\s*(.*)$/, :run_action, command: true, help: {
+        self.class.route(/^\s*#{config.command_prefix}(\S+)\s*(.*)$/, :run_action, command: true, help: {
           "#{config.command_prefix}ACTION" => "run the specified ACTION. use `#{robot.name} #{config.command_prefix}list` for a list of available actions."
         })
       end
@@ -19,6 +19,10 @@ module Lita
       def run_action(resp)
         script = resp.matches[0][0]
         opts = resp.matches[0][1].split(" ")
+
+        # the script will be the robot name if command_prefix is empty
+        return if script =~ /@?#{robot.name}/i
+
         return show_help(resp) if script == 'list'
 
         unless user_is_authorized(script, resp, config)
