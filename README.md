@@ -14,8 +14,15 @@ gem "lita-cmd"
 
 ```ruby
 Lita.configure do |config|
-  # Lita CMD stuff
+  # Lita CMD - required parameters
+
   config.handlers.cmd.scripts_dir = "/path/to/dir/you/expose"
+
+  # Lita CMD - optional parameters
+
+  # Set the prefix for running scripts. Default "cmd "
+  config.handlers.cmd.command_prefix = "run "
+
 end
 ```
 

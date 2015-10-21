@@ -3,26 +3,20 @@ require 'open3'
 module Lita
   module Handlers
     class Cmd < Handler
-
+      on :connected, :create_routes
       config :scripts_dir
+      config :command_prefix, default: "cmd "
 
-      # ROUTES
+      def create_routes(payload)
+        self.class.route(/^\s*#{config.command_prefix}(\S*)\s*(.*)$/, :run_action, command: true, help: {
+          "#{config.command_prefix}ACTION" => "run the specified ACTION. use `#{robot.name} #{config.command_prefix}list` for a list of available actions."
+        })
+      end
 
-      route(/^\s*run\s+(\S*)\s*(.*)$/, :cmd, command: true, help: {
-        "run SCRIPT" => "run the specified SCRIPT. use `run list` for a list of available scripts."
-      })
-
-      # route(/^\s*test\s*/) do |resp|
-      #   auth = Lita::Robot.new.auth
-      #   resp.reply "true" if auth.groups_with_users[:devops].include? resp.user
-      # end
-
-      # HANDLERS
-
-      def cmd(resp)
+      def run_action(resp)
         script = resp.matches[0][0]
         opts = resp.matches[0][1].split(" ")
-        return cmd_help(resp) if script == 'list'
+        return show_help(resp) if script == 'list'
 
         unless user_is_authorized(script, resp, config)
           resp.reply_privately "Unauthorized to run '#{script}'!"
@@ -53,14 +47,12 @@ module Lita
         end
       end
 
-      def cmd_help(resp)
+      def show_help(resp)
         list = get_script_list(resp, config)
 
         out = list.sort.join("\n")
         resp.reply_privately code_blockify(out)
       end
-
-      # HELPERS
 
       private
 
