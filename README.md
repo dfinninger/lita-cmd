@@ -88,6 +88,7 @@ A non-priviledged user will only see scripts without the prefix.
 
 ## Notes
 
+- The user who executed the command will be pass in an environment variable called LITA_USER
 - Make sure that your files are executable
   - (`chmod +x FILE`)
 - Make sure that you've included the correct sha-bang
