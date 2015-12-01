@@ -3,39 +3,28 @@ require 'open3'
 module Lita
   module Handlers
     class Cmd < Handler
-
+      on :connected, :create_routes
       config :scripts_dir, required: true
-      config :output_format, default: "%s"
-      config :stdout_prefix
-      config :stderr_prefix
 
-      ### CMD-HELP ##############################################
+      config :output_format, default: "```\n%s\n```"
+      config :stdout_prefix, default: "[stdout] "
+      config :stderr_prefix, default: "[stderr] "
+      config :command_prefix, default: "cmd "
 
-      route(/^\s*cmd-help\s*$/, :cmd_help, command: true, help: {
-        "cmd-help" => "get a list of scripts available for execution"
-      })
-
-      route(/^\s*test\s*/) do |resp|
-        auth = Lita::Robot.new.auth
-        resp.reply "true" if auth.groups_with_users[:devops].include? resp.user
+      def create_routes(payload)
+        self.class.route(/^\s*#{config.command_prefix}(\S+)\s*(.*)$/, :run_action, command: true, help: {
+          "#{config.command_prefix}ACTION" => "run the specified ACTION. use `#{robot.name} #{config.command_prefix}list` for a list of available actions."
+        })
       end
 
-      def cmd_help(resp)
-        list = get_script_list(resp, config)
-
-        out = list.sort.join("\n")
-        resp.reply_privately code_format(out)
-      end
-
-      ### CMD ###################################################
-
-      route(/^\s*cmd\s+(\S*)\s*(.*)$/, :cmd, command: true, help: {
-        "cmd SCRIPT" => "run the SCRIPT specified; use `lita cmd help` for a list"
-      })
-
-      def cmd(resp)
+      def run_action(resp)
         script = resp.matches[0][0]
         opts = resp.matches[0][1].split(" ")
+
+        # the script will be the robot name if command_prefix is empty
+        return if script =~ /@?#{robot.name}/i
+
+        return show_help(resp) if script == 'list'
 
         unless user_is_authorized(script, resp, config)
           resp.reply_privately "Unauthorized to run '#{script}'!"
@@ -44,7 +33,11 @@ module Lita
 
         out = String.new
         err = String.new
-        Open3.popen3("#{config.scripts_dir}/#{script}", *opts) do |i, o, e, wait_thread|
+
+        script_path = "#{config.scripts_dir}/#{script}"
+        env_vars    = { 'LITA_USER' => resp.user.name }
+
+        Open3.popen3(env_vars, script_path, *opts) do |i, o, e, wait_thread|
           o.each { |line| out << "#{config.stdout_prefix}#{line}" }
           e.each { |line| err << "#{config.stderr_prefix}#{line}" }
         end
@@ -66,7 +59,12 @@ module Lita
         end
       end
 
-      ### HELPERS ############################################
+      def show_help(resp)
+        list = get_script_list(resp, config)
+
+        out = list.sort.join("\n")
+        resp.reply_privately code_format(out)
+      end
 
       private
 
