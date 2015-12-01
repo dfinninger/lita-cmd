@@ -1,8 +1,8 @@
 # lita-cmd
 
-Run scripts from your lita machine and get back the output!
+Run scripts from your lita machine and get the output back.
 
-## Installation
+## Install
 
 Add lita-cmd to your Lita instance's Gemfile:
 
@@ -11,14 +11,17 @@ gem "lita-cmd"
 ```
 
 ## Configuration
-|Config Option|Description|Type|Notes|
-|-------------|-----------|----|-----|
-|`scripts_dir`|Full path to location of scripts|`String`|*required*|
-|`stdout_prefix`|Prefix for text returned to STDOUT|`String`||
-|`stderr_prefix`|Prefix for text returned to STDERR|`String`||
-|`output_format`|Format string used to encapsulate code|`String`||
 
-#### Example:
+| Config Option  | Description                          | Type   | Notes    |
+|----------------|--------------------------------------|--------|----------|
+|`scripts_dir`   |Full path to location of scripts      |`String`|*required*|
+|`stdout_prefix` |Prefix for text returned to STDOUT    |`String`|          |
+|`stderr_prefix` |Prefix for text returned to STDERR    |`String`|          |
+|`output_format` |Format string used to encapsulate code|`String`|          |
+|`command_prefix`|Command to use for executing scripts  |`String`|          |
+
+
+### Example
 
 ```ruby
 Lita.configure do |config|
@@ -35,7 +38,7 @@ Lita.configure do |config|
   config.handlers.cmd.stdout_prefix = ""
   config.handlers.cmd.stderr_prefix = "ERROR: "
 
-  # Set the prefix for running scripts. Default "cmd "
+  # Set the prefix for running scripts. 
   config.handlers.cmd.command_prefix = "run "
 
 end
@@ -43,80 +46,58 @@ end
 
 ## Usage
 
-- `cmd list`
-  - Query the configured directory for filenames and return them
-- `cmd`
-  - Execute a file in the configured directory
+In your chatroom, try one of these commands
 
->- dfinninger: `lita cmd list`
-- lita:
-```
-devops/secret
-hello
-name
-```
-- dfinninger: `lita cmd hello`
-- lita:
-```
-Hello!
-```
-- dfinninger: `lita cmd name`
-- lita:
-```
-Your name is: ... well, idk, man...
-```
-- dfinninger: `lita cmd name Devon`
-- lita:
-```
-Your name is: Devon
-```
+### `lita cmd list`
 
-### Group Control
+Query the configured directory for filenames and return the list
 
-You can now control what groups have access to your Lita scripts!
+### `lita cmd <file>`
 
-In your `scripts` dir make some more that match the name of your groups. Only users that are a part of those groups can see/execute those scripts.
+Execute a file in the configured directory
 
-#### Example
 
-- scripts dir:
-  - Basic directory setup
+## Group Control
+
+You can control what groups have access to your Lita scripts.
+
+In your `scripts` directory make a sub directory named after each of your 
+groups. Only users that belong to these groups can list and execute the 
+scripts inside them.
+
+This is the basic directory structure
 
 ```
 scripts/
   |- devops/
-  |   `- secret
-  |- hello
-  `- name
+  |  - secret_script
+  |- script1
+  |- script2
 ```
 
-- `lita cmd list`
-  - Help text will show you scripts that you have access to with a prefix
+When you run `lita cmd list` you will only see scripts that you have access 
+to. For example:
 
 ```
-devops/secret
-hello
-name
-```
+me:   lita cmd list
 
-- `lita cmd devops/secret`
-  - Execute the command. Prefix required!
+lita: devops/secret_script
+      script1
+      script2
 
-```
-[stdout] I'm a secret!
-```
+me:   lita cmd devops/secret_script
 
-A non-priviledged user will only see scripts without the prefix.
+lita: Executing the secret script
+```
 
 ## Notes
 
-- The user who executed the command will be passed in an environment variable called LITA_USER
-- Make sure that your files are executable
-  - (`chmod +x FILE`)
-- Make sure that you've included the correct sha-bang
-  - `#!/bin/bash`, `#!/usr/bin/env ruby`, etc...
+- The user name of the calling user will be saved in an environment variable 
+  called `LITA_USER`.
+- Make sure that your files are executables (`chmod +x FILE`)
+- Make sure that your files have the proper sheband (`#!/bin/bash`)
 
-## Roadmap
+## Todo
 
 - [x] Include support for directory-based access control
 - [ ] Help text for individual commands

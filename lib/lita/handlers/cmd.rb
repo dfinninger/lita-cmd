@@ -6,9 +6,9 @@ module Lita
       on :connected, :create_routes
       config :scripts_dir, required: true
 
-      config :output_format, default: "```\n%s\n```"
-      config :stdout_prefix, default: "[stdout] "
-      config :stderr_prefix, default: "[stderr] "
+      config :output_format, default: "%s"
+      config :stdout_prefix, default: ""
+      config :stderr_prefix, default: "ERROR: "
       config :command_prefix, default: "cmd "
 
       def create_routes(payload)
