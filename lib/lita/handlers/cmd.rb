@@ -34,7 +34,10 @@ module Lita
         out = String.new
         err = String.new
 
-        Open3.popen3("export LITA_USER='#{resp.user.name}';#{config.scripts_dir}/#{script}", *opts) do |i, o, e, wait_thread|
+        script_path = "#{config.scripts_dir}/#{script}"
+        env_vars    = "LITA_USER='#{resp.user.name}'"
+
+        Open3.popen3("#{env_vars} #{script_path}", *opts) do |i, o, e, wait_thread|
           o.each { |line| out << "#{config.stdout_prefix}#{line}" }
           e.each { |line| err << "#{config.stderr_prefix}#{line}" }
         end
