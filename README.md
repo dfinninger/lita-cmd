@@ -11,6 +11,14 @@ gem "lita-cmd"
 ```
 
 ## Configuration
+|Config Option|Description|Type|Notes|
+|-------------|-----------|----|-----|
+|`scripts_dir`|Full path to location of scripts|`String`|*required*|
+|`stdout_prefix`|Prefix for text returned to STDOUT|`String`||
+|`stderr_prefix`|Prefix for text returned to STDERR|`String`||
+|`output_format`|Format string used to encapsulate code|`String`||
+
+#### Example:
 
 ```ruby
 Lita.configure do |config|
@@ -19,10 +27,11 @@ Lita.configure do |config|
 
   # Lita CMD - optional parameters
 
-  # Set the output format. Default: "```\n%s\n```"
+  # Set the output format. Default: "%s"
+  # Note that %s will contain the returned text
   config.handlers.cmd.output_format = "/code %s"
 
-  # Set the prefix of stdout and stderr. Default: "[stdout] " and "[stderr] "
+  # Set the prefix of stdout and stderr.
   config.handlers.cmd.stdout_prefix = ""
   config.handlers.cmd.stderr_prefix = "ERROR: "
 
