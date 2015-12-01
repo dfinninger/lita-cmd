@@ -60,7 +60,7 @@ module Lita
         list = get_script_list(resp, config)
 
         out = list.sort.join("\n")
-        resp.reply_privately code_blockify(out)
+        resp.reply_privately code_format(out)
       end
 
       private
