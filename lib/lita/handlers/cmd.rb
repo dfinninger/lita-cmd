@@ -5,9 +5,9 @@ module Lita
     class Cmd < Handler
 
       config :scripts_dir, required: true
-      config :output_format, default: "```\n%s\n```"
-      config :stdout_prefix, default: "[stdout] "
-      config :stderr_prefix, default: "[stderr] "
+      config :output_format, default: "%s"
+      config :stdout_prefix
+      config :stderr_prefix
 
       ### CMD-HELP ##############################################
 
@@ -24,7 +24,7 @@ module Lita
         list = get_script_list(resp, config)
 
         out = list.sort.join("\n")
-        resp.reply_privately code_blockify(out)
+        resp.reply_privately code_format(out)
       end
 
       ### CMD ###################################################
@@ -62,7 +62,7 @@ module Lita
         ascii_out = out.encode(Encoding.find('ASCII'), encoding_options)
 
         ascii_out.split("\n").each_slice(50) do |slice|
-          resp.reply code_blockify(slice.join("\n"))
+          resp.reply code_format(slice.join("\n"))
         end
       end
 
@@ -70,7 +70,7 @@ module Lita
 
       private
 
-      def code_blockify(text)
+      def code_format(text)
         config.output_format % text
       end
 
