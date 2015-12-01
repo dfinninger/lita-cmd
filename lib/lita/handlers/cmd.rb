@@ -4,7 +4,10 @@ module Lita
   module Handlers
     class Cmd < Handler
 
-      config :scripts_dir
+      config :scripts_dir, required: true
+      config :output_format, default: "```\n%s\n```"
+      config :stdout_prefix, default: "[stdout] "
+      config :stderr_prefix, default: "[stderr] "
 
       ### CMD-HELP ##############################################
 
@@ -42,8 +45,8 @@ module Lita
         out = String.new
         err = String.new
         Open3.popen3("#{config.scripts_dir}/#{script}", *opts) do |i, o, e, wait_thread|
-          o.each { |line| out << "[stdout] #{line}" }
-          e.each { |line| err << "[stderr] #{line}" }
+          o.each { |line| out << "#{config.stdout_prefix}#{line}" }
+          e.each { |line| err << "#{config.stderr_prefix}#{line}" }
         end
 
         if err != String.new
@@ -66,8 +69,9 @@ module Lita
       ### HELPERS ############################################
 
       private
+
       def code_blockify(text)
-        "```\n#{text}\n```"
+        config.output_format % text
       end
 
       def get_script_list(resp, config)
