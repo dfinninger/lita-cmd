@@ -11,11 +11,20 @@ gem "lita-cmd"
 ```
 
 ## Configuration
+|Config Option|Description|Type|Notes|
+|-------------|-----------|----|-----|
+|`scripts_dir`|Full path to location of scripts|`String`|*required*|
+|`stdout_prefix`|Prefix for text returned to STDOUT|`String`||
+|`stderr_prefix`|Prefix for text returned to STDERR|`String`||
+
+#### Example:
 
 ```ruby
 Lita.configure do |config|
   # Lita CMD stuff
   config.handlers.cmd.scripts_dir = "/path/to/dir/you/expose"
+  config.handlers.cmd.stdout_prefix = ">> "
+  config.handlers.cmd.stderr_prefix = "<< !! >> "
 end
 ```
 
