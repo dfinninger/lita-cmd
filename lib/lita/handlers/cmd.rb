@@ -22,12 +22,12 @@ module Lita
         opts = resp.matches[0][1].split(" ")
 
         # the script will be the robot name if command_prefix is empty
-        return if script =~ /@?#{robot.name}/i
+        return if robot_name and script =~ /^@?#{robot_name}$/i
 
         return show_help(resp) if script == 'list'
 
         unless user_is_authorized(script, resp, config)
-          resp.reply_privately "Unauthorized to run '#{script}'!"
+          resp.reply_privately "Unauthorized to run '#{script}'!" unless config.command_prefix.empty? 
           return
         end
 
@@ -96,6 +96,12 @@ module Lita
       def user_is_authorized(script, resp, config)
         list = get_script_list(resp, config)
         list.include? script
+      end
+
+      def robot_name
+        return robot.name unless robot.name.empty?
+        return robot.mention_name unless robot.mention_name.empty?
+        return false
       end
     end
 
