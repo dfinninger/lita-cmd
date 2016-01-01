@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name          = "lita-cmd"
-  spec.version       = "0.3.1"
+  spec.version       = "0.3.2"
   spec.authors       = ["Devon Finninger"]
   spec.email         = ["devon.finninger@peopleadmin.com"]
   spec.description   = "Run commands from Lita"
