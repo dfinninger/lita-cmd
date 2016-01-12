@@ -33,7 +33,7 @@ module Lita
 
       def cmd(resp)
         script = resp.matches[0][0]
-        opts = CSV::parse_line(resp.matches[0][1].split(" "), col_sep: ' ')
+        opts = CSV::parse_line(resp.matches[0][1], col_sep: ' ')
 
         unless user_is_authorized(script, resp, config)
           resp.reply_privately "Unauthorized to run '#{script}'!"
