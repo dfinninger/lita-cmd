@@ -1,4 +1,5 @@
 require 'open3'
+require 'csv'
 
 module Lita
   module Handlers
@@ -32,7 +33,7 @@ module Lita
 
       def cmd(resp)
         script = resp.matches[0][0]
-        opts = resp.matches[0][1].split(" ")
+        opts = CSV::parse_line(resp.matches[0][1].split(" "), col_sep: ' ')
 
         unless user_is_authorized(script, resp, config)
           resp.reply_privately "Unauthorized to run '#{script}'!"
