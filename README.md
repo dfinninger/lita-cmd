@@ -38,7 +38,7 @@ Lita.configure do |config|
   config.handlers.cmd.stdout_prefix = ""
   config.handlers.cmd.stderr_prefix = "ERROR: "
 
-  # Set the prefix for running scripts. 
+  # Set the prefix for running scripts.
   config.handlers.cmd.command_prefix = "run "
 
 end
@@ -56,13 +56,17 @@ Query the configured directory for filenames and return the list
 
 Execute a file in the configured directory
 
+### `lita cmd <file> "option with spaces"`
+
+Scripts can be passed in options that contain spaces by surrounding with double quotes
+
 
 ## Group Control
 
 You can control what groups have access to your Lita scripts.
 
-In your `scripts` directory make a sub directory named after each of your 
-groups. Only users that belong to these groups can list and execute the 
+In your `scripts` directory make a sub directory named after each of your
+groups. Only users that belong to these groups can list and execute the
 scripts inside them.
 
 This is the basic directory structure
@@ -75,7 +79,7 @@ scripts/
   |- script2
 ```
 
-When you run `lita cmd list` you will only see scripts that you have access 
+When you run `lita cmd list` you will only see scripts that you have access
 to. For example:
 
 ```
@@ -92,7 +96,7 @@ lita: Executing the secret script
 
 ## Notes
 
-- The user name of the calling user will be saved in an environment variable 
+- The user name of the calling user will be saved in an environment variable
   called `LITA_USER`.
 - Make sure that your files are executables (`chmod +x FILE`)
 - Make sure that your files have the proper sheband (`#!/bin/bash`)

@@ -1,3 +1,7 @@
+## 0.3.3
+- [3a498f6](https://github.com/dfinninger/lita-cmd/commit/3a498f6d3448bcf044e3981b8c97e739d5920d64): Add support for options with spaces
+  - [@sjernigan](https://github.com/sjernigan)
+
 ## 0.3.2
 
 - [a79c08b](https://github.com/dfinninger/lita-cmd/commit/a79c08b7cde2295b34d38016827d410962632866): Fix issue with `lita-slack`
@@ -8,4 +12,4 @@
 - [6aa45ca](https://github.com/dfinninger/lita-cmd/commit/6aa45ca0acc68c8677562704a0d4436189f102f3): Customize stdout/stderr prefixes and code format.
   - [@DannyBen](https://github.com/DannyBen), [@groob](https://github.com/groob), [@manicholls](https://github.com/manicholls)
 - [0574baa](https://github.com/dfinninger/lita-cmd/commit/0574baa85e422c71cb064b83dd50479f14194fac): Add MIT License
-  - [mekhanique](https://github.com/mekhanique)
+  - [@mekhanique](https://github.com/mekhanique)
