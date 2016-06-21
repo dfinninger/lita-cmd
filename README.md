@@ -19,7 +19,7 @@ gem "lita-cmd"
 |`stderr_prefix` |Prefix for text returned to STDERR    |`String`|          |
 |`output_format` |Format string used to encapsulate code|`String`|          |
 |`command_prefix`|Command to use for executing scripts  |`String`|          |
-
+|`ignore_script` |regexp of non-script files to ignore  |`Regexp`|          |
 
 ### Example
 
@@ -40,6 +40,9 @@ Lita.configure do |config|
 
   # Set the prefix for running scripts.
   config.handlers.cmd.command_prefix = "run "
+
+  # Set the characters that, if present, will cause a file to not be flagged as a script
+  config.handlers.cmd.ignore_script = Regexp.union(/~/, /#/)
 
 end
 ```

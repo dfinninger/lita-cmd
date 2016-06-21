@@ -11,6 +11,7 @@ module Lita
       config :stdout_prefix, default: ""
       config :stderr_prefix, default: "ERROR: "
       config :command_prefix, default: "cmd "
+      config :ignore_script, default: Regexp.union(/~/, /#/)
 
       def create_routes(payload)
         self.class.route(/^\s*#{config.command_prefix}(\S+)\s*(.*)$/, :run_action, command: true, help: {
@@ -80,13 +81,17 @@ module Lita
         bot = Lita::Robot.new
         auth = bot.auth
 
-        list = Dir.entries(config.scripts_dir).select { |f| File.file? "#{config.scripts_dir}/#{f}" }
+        list = Dir.entries(config.scripts_dir).select do |f|
+          (File.file? "#{config.scripts_dir}/#{f}") &&
+          (f.match(config.ignore_scripts))
+        end
 
         groups = auth.groups_with_users.select { |group, user_list| user_list.include? resp.user }
         groups.keys.each do |group|
           begin
             sublist = Dir.entries("#{config.scripts_dir}/#{group}").select do |f|
-              File.file? "#{config.scripts_dir}/#{group}/#{f}"
+              (File.file? "#{config.scripts_dir}/#{group}/#{f}") &&
+              (f.match(config.ignore_scripts))
             end
           rescue SystemCallError => e
             log.warn "#{group} is not a directory.\n#{e}"
