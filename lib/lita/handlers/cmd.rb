@@ -37,6 +37,9 @@ module Lita
 
         script_path = "#{config.scripts_dir}/#{script}"
         env_vars    = { 'LITA_USER' => resp.user.name }
+        script_group = script.split('/')[0]
+        cred = resp.user.metadata["cred-#{script_group}"]
+        env_vars['LITA_CRED'] = cred unless cred.nil?
 
         Open3.popen3(env_vars, script_path, *opts) do |i, o, e, wait_thread|
           o.each { |line| out << "#{config.stdout_prefix}#{line}" }
