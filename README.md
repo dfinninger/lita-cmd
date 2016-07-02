@@ -19,7 +19,6 @@ gem "lita-cmd"
 |`stderr_prefix` |Prefix for text returned to STDERR    |`String`|          |
 |`output_format` |Format string used to encapsulate code|`String`|          |
 |`command_prefix`|Command to use for executing scripts  |`String`|          |
-|`ignore_script` |regexp of non-script files to ignore  |`Regexp`|          |
 
 ### Example
 

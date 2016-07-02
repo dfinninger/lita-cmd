@@ -11,7 +11,6 @@ module Lita
       config :stdout_prefix, default: ""
       config :stderr_prefix, default: "ERROR: "
       config :command_prefix, default: "cmd "
-      config :ignore_script, default: Regexp.union(/~/, /#/)
 
       def create_routes(payload)
         self.class.route(/^\s*#{config.command_prefix}(\S+)\s*(.*)$/, :run_action, command: true, help: {
@@ -36,11 +35,11 @@ module Lita
         out = String.new
         err = String.new
 
-        script_path = "#{config.scripts_dir}/#{script}"
-        env_vars    = { 'LITA_USER' => resp.user.name }
-        script_group = script.split('/')[0]
-        cred = resp.user.metadata["cred-#{script_group}"]
-        env_vars['LITA_CRED'] = cred unless cred.nil?
+        script_path  = "#{config.scripts_dir}/#{script}"
+        user_env_var = { 'LITA_USER' => resp.user.name }
+
+        creds    = extract_creds(script, resp.user.metadata)
+        env_vars = user_env_var.merge(creds) unless cred.nil?
 
         Open3.popen3(env_vars, script_path, *opts) do |i, o, e, wait_thread|
           o.each { |line| out << "#{config.stdout_prefix}#{line}" }
@@ -73,6 +72,20 @@ module Lita
 
       private
 
+      def extract_creds(script, userdata)
+        script_group = script.split('/')[0]
+
+        extracted_creds = userdata.select { |k, v| k =~ /cred-#{script_group}/ }
+
+        env_vars = {}
+        extracted_creds.each do |k, v|
+          new_key = k.gsub("cred-#{script_group}", "").upcase
+          env_vars[new_key] = v
+        end
+
+        env_vars
+      end
+
       def code_format(text)
         config.output_format % text
       end
@@ -82,16 +95,14 @@ module Lita
         auth = bot.auth
 
         list = Dir.entries(config.scripts_dir).select do |f|
-          (File.file? "#{config.scripts_dir}/#{f}") &&
-          (f.match(config.ignore_scripts))
+          File.file? "#{config.scripts_dir}/#{f}"
         end
 
         groups = auth.groups_with_users.select { |group, user_list| user_list.include? resp.user }
         groups.keys.each do |group|
           begin
             sublist = Dir.entries("#{config.scripts_dir}/#{group}").select do |f|
-              (File.file? "#{config.scripts_dir}/#{group}/#{f}") &&
-              (f.match(config.ignore_scripts))
+              File.file? "#{config.scripts_dir}/#{group}/#{f}"
             end
           rescue SystemCallError => e
             log.warn "#{group} is not a directory.\n#{e}"
