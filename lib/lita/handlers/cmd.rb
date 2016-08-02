@@ -32,28 +32,23 @@ module Lita
           return
         end
 
-        out = String.new
-        err = String.new
-
         script_path = "#{config.scripts_dir}/#{script}"
         env_vars    = { 'LITA_USER' => resp.user.name }
 
         Open3.popen3(env_vars, script_path, *opts) do |i, o, e, wait_thread|
-          o.each { |line| out << "#{config.stdout_prefix}#{line}" }
-          e.each { |line| err << "#{config.stderr_prefix}#{line}" }
+          o.each { |line| show_output(resp, "#{config.stdout_prefix}#{line}") }
+          e.each { |line| show_output(resp, "#{config.stderr_prefix}#{line}") }
         end
+      end
 
-        if err != String.new
-          out << "\n\n#{err}"
-        end
-
+      def show_output(resp, line)
         # Scrub Unicode to ASCII
         encoding_options = {
           :invalid           => :replace,  # Replace invalid byte sequences
           :undef             => :replace,  # Replace anything not defined in ASCII
           :replace           => ''        # Use a blank for those replacements
         }
-        ascii_out = out.encode(Encoding.find('ASCII'), encoding_options)
+        ascii_out = line.encode(Encoding.find('ASCII'), encoding_options)
 
         ascii_out.split("\n").each_slice(50) do |slice|
           resp.reply code_format(slice.join("\n"))
