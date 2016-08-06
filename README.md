@@ -110,7 +110,7 @@ echo "Global var: ${GLOBAL_VAR}"
 ```
 
 Set the following keys:
-```bash
+```
 redis-cli set 'lita:handlers:cmd:@global_var' 'I'm global!'
 redis-cli set 'lita:handlers:cmd:user1:my_env' 'I'm user #1'
 redis-cli set 'lita:handlers:cmd:user2:my_env' 'I'm user #2'
