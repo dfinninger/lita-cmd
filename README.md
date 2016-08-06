@@ -99,7 +99,8 @@ lita: Executing the secret script
 ## Redis Keys
 You the option of specifying environment variables to the script that are populated by Redis keys. The namespace of this lita handler is `lita:handlers:cmd`. Underneath that namespace you can set users and global envvars.
 
-*Example*
+**Example**
+
 See the following script:
 ```
 #!/bin/bash
@@ -109,8 +110,11 @@ echo "Global var: ${GLOBAL_VAR}"
 ```
 
 Set the following keys:
+
 `redis-cli set 'lita:handlers:cmd:@global_var' 'I'm global!'`
+
 `redis-cli set 'lita:handlers:cmd:user1:my_env' 'I'm user #1'`
+
 `redis-cli set 'lita:handlers:cmd:user2:my_env' 'I'm user #2'`
 
 When User1 runs she script, she'll see the following:
