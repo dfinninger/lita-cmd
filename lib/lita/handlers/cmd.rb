@@ -28,7 +28,7 @@ module Lita
         return show_help(resp) if script == 'list'
 
         unless user_is_authorized(script, resp, config)
-          resp.reply_privately "Unauthorized to run '#{script}'!" unless config.command_prefix.empty? 
+          resp.reply_privately "Unauthorized to run '#{script}'!" unless config.command_prefix.empty?
           return
         end
 
@@ -39,7 +39,7 @@ module Lita
         user_env_var = { 'LITA_USER' => resp.user.name }
 
         creds    = extract_creds(script, resp.user.metadata)
-        env_vars = user_env_var.merge(creds) unless cred.nil?
+        env_vars = user_env_var.merge(creds) unless creds.nil?
 
         Open3.popen3(env_vars, script_path, *opts) do |i, o, e, wait_thread|
           o.each { |line| out << "#{config.stdout_prefix}#{line}" }
@@ -73,13 +73,12 @@ module Lita
       private
 
       def extract_creds(script, userdata)
-        script_group = script.split('/')[0]
-
-        extracted_creds = userdata.select { |k, v| k =~ /cred-#{script_group}/ }
+        keys = redis.keys("#{userdata['name']}:*").concat(redis.keys('@*')).uniq
+        vars = keys.map { |k| [k, redis.get(k)] }.to_h
 
         env_vars = {}
-        extracted_creds.each do |k, v|
-          new_key = k.gsub("cred-#{script_group}", "").upcase
+        vars.each do |k, v|
+          new_key = k.gsub(/^.*[:@]/, '').upcase
           env_vars[new_key] = v
         end
 
