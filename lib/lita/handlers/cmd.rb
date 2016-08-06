@@ -11,6 +11,7 @@ module Lita
       config :stdout_prefix, default: ""
       config :stderr_prefix, default: "ERROR: "
       config :command_prefix, default: "cmd "
+      config :ignore_pattern, default: Regexp.union(/~/, /#/)
 
       def create_routes(payload)
         self.class.route(/^\s*#{config.command_prefix}(\S+)\s*(.*)$/, :run_action, command: true, help: {
@@ -109,12 +110,18 @@ module Lita
           list.concat sublist.map { |x| "#{group}/#{x}" } if sublist
         end
 
-        list
+        filter_scrips(list, config)
       end
 
       def user_is_authorized(script, resp, config)
         list = get_script_list(resp, config)
         list.include? script
+      end
+
+      def filter_scrips(list, config)
+        list.delete_if do |item|
+          config.ignore_pattern.match(item)
+        end
       end
 
       def robot_name

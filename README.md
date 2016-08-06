@@ -12,13 +12,14 @@ gem "lita-cmd"
 
 ## Configuration
 
-| Config Option  | Description                          | Type   | Notes    |
-|----------------|--------------------------------------|--------|----------|
-|`scripts_dir`   |Full path to location of scripts      |`String`|*required*|
-|`stdout_prefix` |Prefix for text returned to STDOUT    |`String`|          |
-|`stderr_prefix` |Prefix for text returned to STDERR    |`String`|          |
-|`output_format` |Format string used to encapsulate code|`String`|          |
-|`command_prefix`|Command to use for executing scripts  |`String`|          |
+| Config Option  | Description                            | Type   | Notes    |
+|----------------|----------------------------------------|--------|----------|
+|`scripts_dir`   |Full path to location of scripts        |`String`|*required*|
+|`stdout_prefix` |Prefix for text returned to STDOUT      |`String`|          |
+|`stderr_prefix` |Prefix for text returned to STDERR      |`String`|          |
+|`output_format` |Format string used to encapsulate code  |`String`|          |
+|`command_prefix`|Command to use for executing scripts    |`String`|          |
+|`ignore_pattern`|Patterns to ignore when getting commands|`Regexp`|          |
 
 ### Example
 
