@@ -28,15 +28,18 @@ module Lita
         return show_help(resp) if script == 'list'
 
         unless user_is_authorized(script, resp, config)
-          resp.reply_privately "Unauthorized to run '#{script}'!" unless config.command_prefix.empty? 
+          resp.reply_privately "Unauthorized to run '#{script}'!" unless config.command_prefix.empty?
           return
         end
 
         out = String.new
         err = String.new
 
-        script_path = "#{config.scripts_dir}/#{script}"
-        env_vars    = { 'LITA_USER' => resp.user.name }
+        script_path  = "#{config.scripts_dir}/#{script}"
+        user_env_var = { 'LITA_USER' => resp.user.name }
+
+        creds    = extract_creds(script, resp.user.metadata)
+        env_vars = user_env_var.merge(creds) unless creds.nil?
 
         Open3.popen3(env_vars, script_path, *opts) do |i, o, e, wait_thread|
           o.each { |line| out << "#{config.stdout_prefix}#{line}" }
@@ -69,6 +72,19 @@ module Lita
 
       private
 
+      def extract_creds(script, userdata)
+        keys = redis.keys("#{userdata['name']}:*").concat(redis.keys('@*')).uniq
+        vars = keys.map { |k| [k, redis.get(k)] }.to_h
+
+        env_vars = {}
+        vars.each do |k, v|
+          new_key = k.gsub(/^.*[:@]/, '').upcase
+          env_vars[new_key] = v
+        end
+
+        env_vars
+      end
+
       def code_format(text)
         config.output_format % text
       end
@@ -77,7 +93,9 @@ module Lita
         bot = Lita::Robot.new
         auth = bot.auth
 
-        list = Dir.entries(config.scripts_dir).select { |f| File.file? "#{config.scripts_dir}/#{f}" }
+        list = Dir.entries(config.scripts_dir).select do |f|
+          File.file? "#{config.scripts_dir}/#{f}"
+        end
 
         groups = auth.groups_with_users.select { |group, user_list| user_list.include? resp.user }
         groups.keys.each do |group|

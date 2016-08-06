@@ -20,7 +20,6 @@ gem "lita-cmd"
 |`output_format` |Format string used to encapsulate code|`String`|          |
 |`command_prefix`|Command to use for executing scripts  |`String`|          |
 
-
 ### Example
 
 ```ruby
@@ -40,6 +39,9 @@ Lita.configure do |config|
 
   # Set the prefix for running scripts.
   config.handlers.cmd.command_prefix = "run "
+
+  # Set the characters that, if present, will cause a file to not be flagged as a script
+  config.handlers.cmd.ignore_script = Regexp.union(/~/, /#/)
 
 end
 ```
@@ -94,6 +96,44 @@ me:   lita cmd devops/secret_script
 lita: Executing the secret script
 ```
 
+## Redis Keys
+You the option of specifying environment variables to the script that are populated by Redis keys. The namespace of this lita handler is `lita:handlers:cmd`. Underneath that namespace you can set users and global envvars.
+
+**Example**
+
+See the following script:
+```bash
+#!/bin/bash
+
+echo "My var: ${MY_VAR}"
+echo "Global var: ${GLOBAL_VAR}"
+```
+
+Set the following keys:
+```
+redis-cli set 'lita:handlers:cmd:@global_var' 'I'm global!'
+redis-cli set 'lita:handlers:cmd:user1:my_var' 'I'm user #1'
+redis-cli set 'lita:handlers:cmd:user2:my_var' 'I'm user #2'
+```
+
+When User1 runs she script, she'll see the following:
+```
+My var: I'm user #1
+Global var: I'm global!
+```
+
+Similarly, User2 will see:
+```
+My var: I'm user #2
+Global var: I'm global!
+```
+
+#### Setting a User-specifc Environment Variable
+Go into your Redis machine and set `lita:handlers:cmd:{{username}}:{{key name}}`. That key will be presented to all of the scripts that the user runs.
+
+#### Setting a Global Environment Variable
+Set `lita:handlers:cmd:@test_var`. This will be presented to all of your scripts as `TEST_VAR={{value}}`.
+
 ## Notes
 
 - The user name of the calling user will be saved in an environment variable
@@ -103,6 +143,4 @@ lita: Executing the secret script
 
 ## Todo
 
-- [x] Include support for directory-based access control
-- [ ] Help text for individual commands
 - [ ] Add tests
