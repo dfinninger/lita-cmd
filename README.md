@@ -102,7 +102,7 @@ You the option of specifying environment variables to the script that are popula
 **Example**
 
 See the following script:
-```
+```bash
 #!/bin/bash
 
 echo "My var: ${MY_VAR}"
@@ -110,12 +110,11 @@ echo "Global var: ${GLOBAL_VAR}"
 ```
 
 Set the following keys:
-
-`redis-cli set 'lita:handlers:cmd:@global_var' 'I'm global!'`
-
-`redis-cli set 'lita:handlers:cmd:user1:my_env' 'I'm user #1'`
-
-`redis-cli set 'lita:handlers:cmd:user2:my_env' 'I'm user #2'`
+```bash
+redis-cli set 'lita:handlers:cmd:@global_var' 'I'm global!'
+redis-cli set 'lita:handlers:cmd:user1:my_env' 'I'm user #1'
+redis-cli set 'lita:handlers:cmd:user2:my_env' 'I'm user #2'
+```
 
 When User1 runs she script, she'll see the following:
 ```
@@ -144,6 +143,4 @@ Set `lita:handlers:cmd:@test_var`. This will be presented to all of your scripts
 
 ## Todo
 
-- [x] Include support for directory-based access control
-- [ ] Help text for individual commands
 - [ ] Add tests
